@@ -3,10 +3,12 @@ import FBSDKCoreKit
 import FBSDKShareKit
 import Social
 import MobileCoreServices
+import MessageUI
+import UIKit
 
 
 
-public class ShareUtil{
+public class ShareUtil : NSObject, MFMessageComposeViewControllerDelegate{
 
     public let SUCCESS: String = "SUCCESS"
     public let ERROR_APP_NOT_AVAILABLE: String = "ERROR_APP_NOT_AVAILABLE"
@@ -26,6 +28,11 @@ public class ShareUtil{
     let argBackgroundBottomColor: String  = "backgroundBottomColor";
     let argImages: String  = "images";
     let argVideoFile: String  = "videoFile";
+
+    public func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        // Handle message compose result here
+        controller.dismiss(animated: true, completion: nil)
+    }
 
 
     
@@ -391,17 +398,39 @@ public class ShareUtil{
     }
     
     public func shareToSms(args : [String: Any?],result: @escaping FlutterResult){
-        let message = args[self.argMessage] as? String
-        if #available(iOS 10, *){
-            let urlString = "sms:?&body=\(message!)"
-            if(!canOpenUrl(appName: "sms")){
-                result(ERROR_APP_NOT_AVAILABLE)
-                return
-            }
-            let tgUrl = URL.init(string: urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!)
-            UIApplication.shared.open(tgUrl!, options: [:], completionHandler: nil)
+
+guard let message = args[self.argMessage] as? String else {
+        result("invalid message")
+        return
+    }
+    
+    guard let imagePath = args[self.argImagePath] as? String else {
+        result("image not found")
+        return
+    }
+    
+    let messageBody = "\(message)"
+    let imageUrl = URL(fileURLWithPath: imagePath)
+    
+    if MFMessageComposeViewController.canSendText() {
+        let messageController = MFMessageComposeViewController()
+        messageController.body = messageBody
+        
+        if let imageData = try? Data(contentsOf: imageUrl) {
+            messageController.addAttachmentData(imageData, typeIdentifier: "public.data", filename: "image.jpg")
+        } else {
+            result("image not found")
+            return
         }
-        result(SUCCESS)
+        
+        // ShareUtil sınıfınızı messageComposeDelegate olarak atayın
+        messageController.messageComposeDelegate = self
+        
+        // Present the view controller modally
+        UIApplication.topViewController()?.present(messageController, animated: true, completion: nil)
+    } else {
+        result("selamss")
+    }
     }
     
     public func shareToFacebookStory(args : [String: Any?],result: @escaping FlutterResult) {

@@ -107,7 +107,7 @@ abstract class AppinioSocialSharePlatform extends PlatformInterface {
   }
 
   ///filePath only works for android
-  Future<String> shareToSMS(String message, {List<String>? filePaths}) {
+  Future<String> shareToSMS(String message, String imagePath) {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 

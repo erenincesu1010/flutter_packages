@@ -85,8 +85,7 @@ class IOS {
         .shareToSystem("", message, filePaths: filePaths);
   }
 
-  Future<String> shareToSMS(String message) {
-    return AppinioSocialSharePlatform.instance
-        .shareToSMS(message, filePaths: []);
+  Future<String> shareToSMS(String message, String imagePath){
+    return AppinioSocialSharePlatform.instance.shareToSMS(message, imagePath);
   }
 }

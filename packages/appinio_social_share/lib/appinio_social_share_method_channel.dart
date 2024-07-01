@@ -148,9 +148,9 @@ class MethodChannelAppinioSocialShare extends AppinioSocialSharePlatform {
   }
 
   @override
-  Future<String> shareToSMS(String message, {List<String>? filePaths}) async {
+  Future<String> shareToSMS(String message, String imagePath) async {
     return ((await methodChannel.invokeMethod<String>(
-            sms, {"message": message, "imagePaths": filePaths})) ??
+            sms, {"message": message, "imagePath": imagePath})) ??
         "");
   }
 

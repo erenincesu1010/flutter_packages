@@ -19,27 +19,34 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: "Share Feature",
-        home: Scaffold(
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                child: const Text("ShareToWhatsapp"),
-                onPressed: () async {
+      title: "Share Feature",
+      home: Scaffold(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              child: const Text("ShareToSms"),
+              onPressed: () async {
+                try {
                   FilePickerResult? result = await FilePicker.platform
                       .pickFiles(type: FileType.image, allowMultiple: false);
                   if (result != null && result.paths.isNotEmpty) {
-                    shareToWhatsApp("message", result.paths[0]!);
+                    shareToSms("message", result.paths[0]!);
                   }
-                },
-              ),
-            ],
-          ),
-        ));
+                } catch (e) {
+                  print(e);
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  shareToWhatsApp(String message, String filePath) async {
-    await appinioSocialShare.android.shareToSMS(message, filePath);
+  shareToSms(String message, String filePath) async {
+    final result = await appinioSocialShare.iOS.shareToSMS(message, filePath);
+    print(result);
+    await appinioSocialShare.iOS.shareToSMS(message, filePath);
   }
 }
